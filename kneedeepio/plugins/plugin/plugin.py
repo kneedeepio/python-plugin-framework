@@ -15,26 +15,32 @@ from kneedeepio.plugins.core import ObjectDatastoreService
 
 ### CLASSES ###
 class Plugin(metaclass = abc.ABCMeta):
-    def __init__(self, config_srv, logging_srv, metrics_srv, object_srv):
-        if isinstance(config_srv, ConfigurationService):
-            self.config = config_srv
+    required_services = ["logging"] # NOTE: The logging service is always supplied, but it's good to be explicit.
+    def __init__(self, services):
+        # for service in services:
+        #     if isinstance(services[service], ConfigurationService):
+        #         self.config = services[service]
+        #     # else:
+        #     #     raise TypeError("Invalid object passed as Configuration Service")
+        #
+        #     if isinstance(services[service], LoggingService):
+        #         self.logger = services[service]
+        #     # else:
+        #     #     raise TypeError("Invalid object passed as Loggin Service")
+        #
+        #     # if isinstance(metrics_srv, MetricsReportingService):
+        #     #     self.metric = metrics_srv
+        #     # else:
+        #     #     raise TypeError("Invalid object passed as Metrics Reporting Service")
+        #
+        #     if isinstance(services[service], ObjectDatastoreService):
+        #         self.object = services[service]
+        #     # else:
+        #     #     raise TypeError("Invalid object passed as Object Datastore Service")
+        if isinstance(services["logging"], LoggingService):
+            self.logger = services["logging"]
         else:
-            raise TypeError("Invalid object passed as Configuration Service")
-
-        if isinstance(logging_srv, LoggingService):
-            self.logger = logging_srv
-        else:
-            raise TypeError("Invalid object passed as Loggin Service")
-
-        # if isinstance(metrics_srv, MetricsReportingService):
-        #     self.metric = metrics_srv
-        # else:
-        #     raise TypeError("Invalid object passed as Metrics Reporting Service")
-
-        if isinstance(object_srv, ObjectDatastoreService):
-            self.object = object_srv
-        else:
-            raise TypeError("Invalid object passed as Object Datastore Service")
+            raise TypeError("Invalid object passed as Logging Service")
 
         self.logger.debug("Plugin Initialized: %s", type(self).__name__)
 
@@ -54,11 +60,11 @@ class Plugin(metaclass = abc.ABCMeta):
         # This method should do whatever is needed to un-setup the plugin, stopping operation.
         raise NotImplementedError
 
-class ExamplePlugin(Plugin):
-    def __init__(self, config_srv, logging_srv, metrics_srv, object_srv):
-        super().__init__(config_srv, logging_srv, metrics_srv, object_srv)
-        self.logger.debug("Inputs - config_srv: %s, logging_srv: %s, metrics_srv: %s, object_srv: %s",
-                          config_srv, logging_srv, metrics_srv, object_srv)
+class ExampleLoggingPlugin(Plugin):
+    required_services = ["logging"]
+    def __init__(self, services):
+        super().__init__(services)
+        self.logger.debug("Inputs - services: %s", services)
 
     def setup(self):
         # This method should do whatever is needed to initialize the plugin's operation.

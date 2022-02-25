@@ -3,7 +3,7 @@
 # NOTE: This plugin modules contains the "framework" that plugins should inherit from or use as an example.
 
 ### IMPORTS ###
-from .plugin import Plugin, ExamplePlugin
+from .plugin import Plugin, ExampleLoggingPlugin
 
 ### GLOBALS ###
 

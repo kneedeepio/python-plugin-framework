@@ -4,16 +4,14 @@
 import logging
 import importlib
 
-from .configurationservice import ConfigurationService
-from .loggingservice import LoggingService
-#from .metricsreportingservice import MetricsReportingService
-from .objectdatastoreservice import ObjectDatastoreService
-
 ### GLOBALS ###
 
 ### FUNCTIONS ###
 
 ### CLASSES ###
+class ServiceAlreadyRegistered(Exception):
+    pass
+
 class PluginAlreadyLoadedException(Exception):
     pass
 
@@ -22,43 +20,26 @@ class PluginNotLoadedException(Exception):
 
 # FIXME: Need to add some sort of "service request" mechanism so the plugin can
 #        request which services it needs and not have services that aren't needed.
+#        https://stackoverflow.com/questions/23228664/how-to-check-which-arguments-a-function-method-takes
 class PluginFactory:
-    def __init__(self, config_srv, logging_srv, metrics_srv, object_srv):
+    def __init__(self, logging_srv):
         self.logger = logging.getLogger(type(self).__name__)
-        self.logger.debug("Inputs - config_srv: %s, logging_srv: %s, metrics_srv: %s, object_srv: %s",
-                          config_srv, logging_srv, metrics_srv, object_srv)
+        self.logger.debug("Inputs - logging_srv: %s", logging_srv)
 
-        if isinstance(config_srv, ConfigurationService):
-            self.configuration_service = config_srv
-        else:
-            raise TypeError("Invalid object passed as Configuration Service")
-
-        if isinstance(logging_srv, LoggingService):
-            self.logging_service = logging_srv
-        else:
-            raise TypeError("Invalid object passed as Logging Service")
-
-        # if isinstance(metrics_srv, MetricsReportingService):
-        #     self.metrics_reporting_service = metrics_srv
-        # else:
-        #     raise TypeError("Invalid object passed as Metrics Reporting Service")
-
-        if isinstance(object_srv, ObjectDatastoreService):
-            self.object_datastore_service = object_srv
-        else:
-            raise TypeError("Invalid object passed as Object Datastore Service")
-
-        # FIXME: What data structure to use in the registry?
-        #        Would this work?
-        #           {
-        #               "module_name": "example.plugins",
-        #               "class_name": "ExamplePlugin"
-        #               "instance": <ExamplePlugin ...>
-        #           }
-        #        Is version tracking needed?
+        self._service_registry = {}
         self._plugin_registry = []
         self._load_callbacks = []
         self._unload_callbacks = []
+
+        self.register_service("logging", logging_srv)
+
+    def register_service(self, service_type, service):
+        self.logger.debug("Inputs - service_type: %s, service: %s", service_type, service)
+        # Check if service type already registered.
+        if service_type in self._service_registry:
+            raise ServiceAlreadyRegistered("Service of type {} already registered.".format(service_type))
+        # Put service in registry
+        self._service_registry[service_type] = service
 
     def load(self, module_name, class_name):
         self.logger.debug("Inputs - module_name: %s, class_name: %s", module_name, class_name)
@@ -71,14 +52,18 @@ class PluginFactory:
         self.logger.debug("tmp_module: %s", tmp_module)
         # Create an instance of the plugin
         tmp_class = getattr(tmp_module, class_name)
-        self.logger.debug("tmp_class: %s", tmp_class)
         # FIXME: How to check the plugin is subclass of Plugin?
-        tmp_instance = tmp_class(
-            config_srv = self.configuration_service,
-            logging_srv = self.logging_service,
-            metrics_srv = None,
-            object_srv = self.object_datastore_service
-        )
+        #        The following causes a circular import.
+        #        Might need to split "core" into "services" and "management".
+        # if not issubclass(tmp_class, Plugin):
+        #     raise TypeError("Plugin does not subclass kneedeepio.plugins.plugin.Plugin")
+        self.logger.debug("tmp_class: %s", tmp_class)
+        # NOTE: The logging service is always provided as it should always be used.
+        tmp_services = {"logging": self._service_registry["logging"]}
+        for tmp_service_type in tmp_class.required_services:
+            # FIXME: Wrap in try/except to catch missing key error and re-raise as missing service error
+            tmp_services[tmp_service_type] = self._service_registry[tmp_service_type]
+        tmp_instance = tmp_class(tmp_services)
         self.logger.debug("tmp_instance: %s", tmp_instance)
         # Store the instance in the registry list
         self._plugin_registry.append({
@@ -91,7 +76,6 @@ class PluginFactory:
         # Call the load callbacks
         for cb in self._load_callbacks:
             cb(tmp_instance)
-        # FIXME: What needs to be done to "run" the plugins?
 
     def unload(self, module_name, class_name):
         self.logger.debug("Inputs - module_name: %s, class_name: %s", module_name, class_name)
@@ -102,7 +86,6 @@ class PluginFactory:
                 tmp_plugin = loaded_plugin
         if tmp_plugin is None:
             raise PluginNotLoadedException
-        # FIXME: What needs to be done to "stop running" the plugins?
         # Call the unload callbacks
         for cb in self._unload_callbacks:
             cb(tmp_plugin["instance"])
