@@ -4,10 +4,10 @@
 import abc
 #import logging
 
-from kneedeepio.plugins.core import ConfigurationService
+#from kneedeepio.plugins.core import ConfigurationService
 from kneedeepio.plugins.core import LoggingService
 #from kneedeepio.plugins.core import MetricsReportingService
-from kneedeepio.plugins.core import ObjectDatastoreService
+#from kneedeepio.plugins.core import ObjectDatastoreService
 
 ### GLOBALS ###
 
