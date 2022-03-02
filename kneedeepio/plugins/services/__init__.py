@@ -6,8 +6,6 @@ from .loggingservice import LoggingService, InProcessLoggingService
 #from .metricsreportingservice import MetricsReportingService
 from .objectdatastoreservice import ObjectDatastoreService, InMemoryObjectDatastoreService
 
-from .pluginfactory import PluginFactory
-
 ### GLOBALS ###
 
 ### FUNCTIONS ###

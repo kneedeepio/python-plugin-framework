@@ -2,12 +2,8 @@
 
 ### IMPORTS ###
 import abc
-#import logging
 
-#from kneedeepio.plugins.core import ConfigurationService
-from kneedeepio.plugins.core import LoggingService
-#from kneedeepio.plugins.core import MetricsReportingService
-#from kneedeepio.plugins.core import ObjectDatastoreService
+from kneedeepio.plugins.services import LoggingService
 
 ### GLOBALS ###
 
@@ -59,22 +55,3 @@ class Plugin(metaclass = abc.ABCMeta):
     def teardown(self):
         # This method should do whatever is needed to un-setup the plugin, stopping operation.
         raise NotImplementedError
-
-class ExampleLoggingPlugin(Plugin):
-    required_services = ["logging"]
-    def __init__(self, services):
-        super().__init__(services)
-        self.logger.debug("Inputs - services: %s", services)
-
-    def setup(self):
-        # This method should do whatever is needed to initialize the plugin's operation.
-        self.logger.debug("setup method")
-
-    def tick(self):
-        # FIXME: Pick a better name for this
-        # This method should do some small piece of work for the plugin.
-        self.logger.debug("tick method")
-
-    def teardown(self):
-        # This method should do whatever is needed to un-setup the plugin, stopping operation.
-        self.logger.debug("teardown method")

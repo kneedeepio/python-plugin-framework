@@ -4,23 +4,18 @@
 import logging
 import importlib
 
+from kneedeepio.plugins.plugin import Plugin
+
+from .exceptions import ServiceAlreadyRegistered
+from .exceptions import ServiceNotRegistered
+from .exceptions import PluginAlreadyLoadedException
+from .exceptions import PluginNotLoadedException
+
 ### GLOBALS ###
 
 ### FUNCTIONS ###
 
 ### CLASSES ###
-class ServiceAlreadyRegistered(Exception):
-    pass
-
-class PluginAlreadyLoadedException(Exception):
-    pass
-
-class PluginNotLoadedException(Exception):
-    pass
-
-# FIXME: Need to add some sort of "service request" mechanism so the plugin can
-#        request which services it needs and not have services that aren't needed.
-#        https://stackoverflow.com/questions/23228664/how-to-check-which-arguments-a-function-method-takes
 class PluginFactory:
     def __init__(self, logging_srv):
         self.logger = logging.getLogger(type(self).__name__)
@@ -52,17 +47,16 @@ class PluginFactory:
         self.logger.debug("tmp_module: %s", tmp_module)
         # Create an instance of the plugin
         tmp_class = getattr(tmp_module, class_name)
-        # FIXME: How to check the plugin is subclass of Plugin?
-        #        The following causes a circular import.
-        #        Might need to split "core" into "services" and "management".
-        # if not issubclass(tmp_class, Plugin):
-        #     raise TypeError("Plugin does not subclass kneedeepio.plugins.plugin.Plugin")
+        if not issubclass(tmp_class, Plugin):
+            raise TypeError("Plugin does not subclass kneedeepio.plugins.plugin.Plugin")
         self.logger.debug("tmp_class: %s", tmp_class)
         # NOTE: The logging service is always provided as it should always be used.
         tmp_services = {"logging": self._service_registry["logging"]}
         for tmp_service_type in tmp_class.required_services:
-            # FIXME: Wrap in try/except to catch missing key error and re-raise as missing service error
-            tmp_services[tmp_service_type] = self._service_registry[tmp_service_type]
+            if tmp_service_type in self._service_registry:
+                tmp_services[tmp_service_type] = self._service_registry[tmp_service_type]
+            else:
+                raise ServiceNotRegistered("Service type '{}' not registered.".format(tmp_service_type))
         tmp_instance = tmp_class(tmp_services)
         self.logger.debug("tmp_instance: %s", tmp_instance)
         # Store the instance in the registry list
@@ -113,6 +107,7 @@ class PluginFactory:
     def tick_plugins(self):
         self.logger.debug("Inputs - None")
         # Call the tick function for each of the plugins.
-        # FIXME: Should the be renamed to a "heartbeat"?
+        # This can be used as a heartbeat for the plugin, or used to perform a
+        #    small amount of work.
         for item in self._plugin_registry:
             item["instance"].tick()
