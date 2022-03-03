@@ -1,2 +1,2 @@
 # python-plugin-framework
-A plugin framework for web applications written in Python.
+A plugin framework for applications written in Python.
