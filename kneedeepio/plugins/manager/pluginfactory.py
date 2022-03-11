@@ -68,8 +68,8 @@ class PluginFactory:
         # Run the plugin instance setup
         tmp_instance.setup()
         # Call the load callbacks
-        for cb in self._load_callbacks:
-            cb(tmp_instance)
+        for callback in self._load_callbacks:
+            callback(tmp_instance)
 
     def unload(self, module_name, class_name):
         self.logger.debug("Inputs - module_name: %s, class_name: %s", module_name, class_name)
@@ -81,8 +81,8 @@ class PluginFactory:
         if tmp_plugin is None:
             raise PluginNotLoadedException
         # Call the unload callbacks
-        for cb in self._unload_callbacks:
-            cb(tmp_plugin["instance"])
+        for callback in self._unload_callbacks:
+            callback(tmp_plugin["instance"])
         # Run the plugin instance teardown
         tmp_plugin["instance"].teardown()
         # Remove the instance from the registry
