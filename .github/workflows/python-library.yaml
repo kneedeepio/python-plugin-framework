@@ -41,4 +41,4 @@ jobs:
       run: python ./analysis_radon.py
 
     - name: Push Coverage to coveralls
-      run: echo "FIXME: Add coverage push here."
+      run: /bin/true # FIXME: Add coverage push here.
