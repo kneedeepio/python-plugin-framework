@@ -1,0 +1,44 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: Python Library
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out the repo
+      uses: actions/checkout@v2
+
+    - name: Get the git commit short hash
+      id: git_commit_info
+      run: echo "::set-output name=short_sha::$(echo ${GITHUB_SHA} | cut -c1-8)"
+
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+    - name: Run PyLint
+      run: python ./analysis_pylint.py
+
+    - name: Run Unit Tests
+      run: python ./analysis_coverage.py
+
+    - name: Run Code Complexity
+      run: python ./analysis_radon.py
+
+    - name: Push Coverage to coveralls
+      run: echo "FIXME: Add coverage push here."
