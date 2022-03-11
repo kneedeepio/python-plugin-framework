@@ -1,0 +1,39 @@
+# This workflow will run when a new tag starting with 'v' is created and retag the image for the matching commit.
+# For more information see: https://stackoverflow.com/questions/63932728/github-action-release-tag
+
+name: Release Library to PyPi
+
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+' # This should match three numbers in the semantic versioning style.
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Get the git commit short hash
+      id: git_commit_info
+      run: |
+        echo "::set-output name=short_sha::$(echo ${GITHUB_SHA} | cut -c1-8)"
+        echo "::set-output name=version::${GITHUB_REF#refs/tags/}"
+
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+    - name: Update the Version Number
+      run: echo '__version__ = "${{ steps.git_commit_info.outputs.version }}"' > ./kneedeepio/plugins/version.py
+
+    - name: Build the Package for the Library
+      run: python -m build
+
+    - name: Upload the Package for the Library to PyPi
+      run: twine upload --username "__token__" --password "${{ secrets.PYPI_TOKEN }}" dist/*
