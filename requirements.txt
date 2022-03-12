@@ -1,6 +1,6 @@
 build
+wheel
 twine
 pylint
 radon
 coverage
-

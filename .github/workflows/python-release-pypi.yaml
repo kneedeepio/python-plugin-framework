@@ -40,3 +40,11 @@ jobs:
 
     - name: Upload the Package for the Library to PyPi
       run: twine upload --username "__token__" --password "${{ secrets.PYPI_TOKEN }}" dist/*
+
+    - name: Upload the Package Files to the GitHub Release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ github.ref }}
+        file: dist/*
+        file_glob: true
