@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# Disabling "protected-access" as this specifically tests the internal data of the class under test
+# pylint: disable=W0212
+
 ### IMPORTS ###
 import logging
 import unittest
@@ -22,7 +25,7 @@ class TestInMemoryObjectDatastoreService(unittest.TestCase):
         tmp_imods = InMemoryObjectDatastoreService()
         self.assertEqual(tmp_imods._data, {})
         tmp_imods._data["key_one"] = "value_one"
-        self.assertEquals(tmp_imods.get_value("key_one"), "value_one")
+        self.assertEqual(tmp_imods.get_value("key_one"), "value_one")
 
     def test_set_value(self):
         self.logger.debug("test_set_value")

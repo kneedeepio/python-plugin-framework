@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# Disabling "protected-access" as this specifically tests the internal data of the class under test
+# pylint: disable=W0212
+
 ### IMPORTS ###
 import logging
 import unittest
@@ -22,14 +25,14 @@ class TestInMemoryConfigurationService(unittest.TestCase):
         tmp_imcs = InMemoryConfigurationService()
         self.assertEqual(tmp_imcs._data, {})
         tmp_imcs.load_config({"key_zero": "value_zero"})
-        self.assertEquals(tmp_imcs._data, {"key_zero": "value_zero"})
+        self.assertEqual(tmp_imcs._data, {"key_zero": "value_zero"})
 
     def test_get_value(self):
         self.logger.debug("test_get_value")
         tmp_imcs = InMemoryConfigurationService()
         self.assertEqual(tmp_imcs._data, {})
         tmp_imcs._data["key_one"] = "value_one"
-        self.assertEquals(tmp_imcs.get_value("key_one"), "value_one")
+        self.assertEqual(tmp_imcs.get_value("key_one"), "value_one")
 
     def test_set_value(self):
         self.logger.debug("test_set_value")

@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# Disabling the "abstract-class-instantiated" as this specifically tests the abstract class
+# pylint: disable=E0110
+
 ### IMPORTS ###
 import logging
 import unittest

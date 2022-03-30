@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# Disabling the "abstract-class-instantiated" as this specifically tests the abstract class
+# pylint: disable=E0110
+
 ### IMPORTS ###
 import logging
 import unittest
@@ -26,13 +29,13 @@ class TestPlugin(unittest.TestCase):
     def test_init_no_services(self):
         self.logger.debug("test_init_no_services")
         with self.assertRaises(TypeError):
-            tmp_plugin = Plugin()
+            Plugin() # pylint: disable=E1120
 
     @patch.multiple(Plugin, __abstractmethods__ = set())
     def test_init_bad_services(self):
         self.logger.debug("test_init_no_services")
         with self.assertRaises(TypeError):
-            tmp_plugin = Plugin({"logging": "bad_logger"})
+            Plugin({"logging": "bad_logger"})
 
     @patch.multiple(Plugin, __abstractmethods__ = set())
     def test_setup(self):

@@ -4,8 +4,6 @@
 import logging
 import unittest
 
-from unittest.mock import patch
-
 from kneedeepio.plugins.services import InProcessLoggingService
 from kneedeepio.plugins.plugin import ExampleLoggingPlugin
 from kneedeepio.plugins.manager import PluginFactory

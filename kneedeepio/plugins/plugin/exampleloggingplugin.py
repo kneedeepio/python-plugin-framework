@@ -19,7 +19,6 @@ class ExampleLoggingPlugin(Plugin):
         self.logger.debug("setup method")
 
     def tick(self):
-        # FIXME: Pick a better name for this
         # This method should do some small piece of work for the plugin.
         self.logger.debug("tick method")
 
