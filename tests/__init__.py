@@ -24,19 +24,13 @@ def run_all_tests():
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
     suites = []
     #suites.extend(build_test_suites("test_*.py"))
-    #suites.extend(build_test_suites("plugins/test_*.py"))
+    suites.extend(build_test_suites("plugins/services/test_*.py"))
+    suites.extend(build_test_suites("plugins/plugin/test_*.py"))
+    suites.extend(build_test_suites("plugins/manager/test_*.py"))
     test_suite = unittest.TestSuite(suites)
     # Run the test suite containing all the tests from all the modules
     test_runner = unittest.TextTestRunner()
     result = test_runner.run(test_suite)
-    if result.wasSuccessful():
-        return True
-    return False
+    return result.wasSuccessful()
 
 ### CLASSES ###
-
-### MAIN ###
-if __name__ == '__main__':
-    if run_all_tests() is False:
-        sys.exit(1)
-    sys.exit(0)

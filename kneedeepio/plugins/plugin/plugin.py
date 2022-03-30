@@ -13,31 +13,10 @@ from kneedeepio.plugins.services import LoggingService
 class Plugin(metaclass = abc.ABCMeta):
     required_services = ["logging"] # NOTE: The logging service is always supplied, but it's good to be explicit.
     def __init__(self, services):
-        # for service in services:
-        #     if isinstance(services[service], ConfigurationService):
-        #         self.config = services[service]
-        #     # else:
-        #     #     raise TypeError("Invalid object passed as Configuration Service")
-        #
-        #     if isinstance(services[service], LoggingService):
-        #         self.logger = services[service]
-        #     # else:
-        #     #     raise TypeError("Invalid object passed as Loggin Service")
-        #
-        #     # if isinstance(metrics_srv, MetricsReportingService):
-        #     #     self.metric = metrics_srv
-        #     # else:
-        #     #     raise TypeError("Invalid object passed as Metrics Reporting Service")
-        #
-        #     if isinstance(services[service], ObjectDatastoreService):
-        #         self.object = services[service]
-        #     # else:
-        #     #     raise TypeError("Invalid object passed as Object Datastore Service")
         if isinstance(services["logging"], LoggingService):
             self.logger = services["logging"]
         else:
             raise TypeError("Invalid object passed as Logging Service")
-
         self.logger.debug("Plugin Initialized: %s", type(self).__name__)
 
     @abc.abstractmethod

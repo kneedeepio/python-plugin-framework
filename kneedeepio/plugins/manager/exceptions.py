@@ -10,10 +10,10 @@
 class KneeDeepIOPluginsManagerException(Exception):
     pass
 
-class ServiceAlreadyRegistered(KneeDeepIOPluginsManagerException):
+class ServiceAlreadyRegisteredException(KneeDeepIOPluginsManagerException):
     pass
 
-class ServiceNotRegistered(KneeDeepIOPluginsManagerException):
+class ServiceNotRegisteredException(KneeDeepIOPluginsManagerException):
     pass
 
 class PluginAlreadyLoadedException(KneeDeepIOPluginsManagerException):

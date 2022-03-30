@@ -37,7 +37,6 @@ class InProcessLoggingService(LoggingService):
     def __init__(self):
         super().__init__()
         self.logger.debug("Inputs - None")
-        self._data = {}
 
     def debug(self, msg, *args, **kwargs):
         self.logger.debug(msg, *args, **kwargs)

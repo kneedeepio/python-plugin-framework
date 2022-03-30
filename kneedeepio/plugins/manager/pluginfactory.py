@@ -6,8 +6,8 @@ import importlib
 
 from kneedeepio.plugins.plugin import Plugin
 
-from .exceptions import ServiceAlreadyRegistered
-from .exceptions import ServiceNotRegistered
+from .exceptions import ServiceAlreadyRegisteredException
+from .exceptions import ServiceNotRegisteredException
 from .exceptions import PluginAlreadyLoadedException
 from .exceptions import PluginNotLoadedException
 
@@ -32,7 +32,7 @@ class PluginFactory:
         self.logger.debug("Inputs - service_type: %s, service: %s", service_type, service)
         # Check if service type already registered.
         if service_type in self._service_registry:
-            raise ServiceAlreadyRegistered("Service of type {} already registered.".format(service_type))
+            raise ServiceAlreadyRegisteredException("Service of type {} already registered.".format(service_type))
         # Put service in registry
         self._service_registry[service_type] = service
 
@@ -56,7 +56,7 @@ class PluginFactory:
             if tmp_service_type in self._service_registry:
                 tmp_services[tmp_service_type] = self._service_registry[tmp_service_type]
             else:
-                raise ServiceNotRegistered("Service type '{}' not registered.".format(tmp_service_type))
+                raise ServiceNotRegisteredException("Service type '{}' not registered.".format(tmp_service_type))
         tmp_instance = tmp_class(tmp_services)
         self.logger.debug("tmp_instance: %s", tmp_instance)
         # Store the instance in the registry list
